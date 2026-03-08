@@ -12,7 +12,7 @@ transporter = nodemailer.createTransport({
 
 })
 
-console.log('Ethereal account created:')
+console.log('mailtrap account created:')
 
 
 

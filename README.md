@@ -4,20 +4,34 @@ A Node.js authentication system with signup, login, OTP verification, email veri
 
 Clone and install:
 
-git clone <your-repo-url>
-cd <project-folder>
+git clone: git remote add origin https://github.com/jessiewhite4511/auth-system.git
+cd: auth-system
 npm install
 
 Create a .env file in the root folder:
 
 PORT=5000
 MONGO_URI= mongodb://localhost:27017/myapp
+
 REDIS_HOST= 127.0.0.1
 REDIS_PORT= 6379
+
 JWT_SECRET= your_jwt_secret
+
 EMAIL_SERVICE= smtp.mailtrap.io
 EMAIL_USER= your_mailtrap_user
 EMAIL_PASS= your_mailtrap_pass
+
+## Redis Setup
+
+This project uses Redis for caching idempotency keys, OTPs, and temporary data.  
+Run Redis via Docker Desktop:
+docker run -d --name redis -p 6379:6379 redis
+Add these to your .env file in the project root:
+REDIS_HOST=127.0.0.1   # Docker Desktop Redis host
+REDIS_PORT=6379        # Redis default port
+Note: Ensure the Redis container is running before starting the Node.js server. You can check running containers with:
+docker ps
 
 Start server:
 
