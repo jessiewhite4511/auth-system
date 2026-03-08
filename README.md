@@ -1,161 +1,203 @@
 # Authentication System Project
 
-A Node.js authentication system with signup, login, OTP verification, email verification, password validation, Input validation, rate limiting, Redis caching, ETag, session tracking, email queue, worker process, and mailer.
+A Node.js authentication system with features including:
 
-Clone and install:
+- Signup & login  
+- OTP verification  
+- Email verification  
+- Password & input validation  
+- Rate limiting  
+- Redis caching  
+- ETag support  
+- Session tracking  
+- Email queue & worker process  
+- Mailer module  
+- Admin routes for user management  
 
-git clone: git remote add origin https://github.com/jessiewhite4511/auth-system.git
-cd: auth-system
+---
+
+## 🔹 Clone & Install
+
+git clone https://github.com/jessiewhite4511/auth-system.git
+cd auth-system
 npm install
+---
+
+## 🔹 Environment Variables
 
 Create a .env file in the root folder:
 
 PORT=5000
-MONGO_URI= mongodb://localhost:27017/myapp
+MONGO_URI=mongodb://localhost:27017/myapp
 
-REDIS_HOST= 127.0.0.1
-REDIS_PORT= 6379
+REDIS_HOST=127.0.0.1
+REDIS_PORT=6379
 
-JWT_SECRET= your_jwt_secret
+JWT_SECRET=your_jwt_secret
 
-EMAIL_SERVICE= smtp.mailtrap.io
-EMAIL_USER= your_mailtrap_user
-EMAIL_PASS= your_mailtrap_pass
+EMAIL_SERVICE=smtp.mailtrap.io
+EMAIL_USER=your_mailtrap_user
+EMAIL_PASS=your_mailtrap_pass
+---
 
-## Redis Setup
+## 🔹 Redis Setup
 
-This project uses Redis for caching idempotency keys, OTPs, and temporary data.  
-Run Redis via Docker Desktop:
+This project uses Redis for caching idempotency keys, OTPs, and temporary data.
+
+Run Redis via Docker:
+
 docker run -d --name redis -p 6379:6379 redis
-Add these to your .env file in the project root:
-REDIS_HOST=127.0.0.1   # Docker Desktop Redis host
-REDIS_PORT=6379        # Redis default port
-Note: Ensure the Redis container is running before starting the Node.js server. You can check running containers with:
-docker ps
+Check if Redis is running:
 
-Start server:
+docker ps
+---
+
+## 🔹 Start Server & Worker
+
+Start Node.js server:
 
 node server.js
-
-Start worker (for email queue):
+Start email worker process:
 
 node worker/workers.js
-
-Run the script below to create the first admin user:
+Create the first admin user:
 
 node createAdmin.js
+---
 
-API Endpoints:
+## 🔹 API Endpoints
 
-POST /api/users/signup
+### 1. Signup
+
+POST /api/users/signup  
+
 Request Body:
+
 {
   "firstname": "John",
-  "lastname": "jim",
+  "lastname": "Jim",
   "username": "johnjim",
   "email": "bb@example.com",
   "password": "123456"
 }
 Response:
+
 {
   "message": "Signup Successful. Verify your email",
   "newUser": {
     "email": "bb@example.com",
     "firstname": "John",
-    "lastname": "jim",
+    "lastname": "Jim",
     "username": "johnjim",
     "isVerified": false
   }
 }
+---
 
-POST /api/users/login
+### 2. Login
+
+POST /api/users/login  
+
 Request Body:
+
 {
   "email": "bb@example.com",
   "password": "123456"
 }
+Behavior:
 
-When a user logs in from a new IP address, the system triggers OTP verification.
-
-Current behavior:
-
-- First login attempt from a new IP sets newIp = true.
-- The session is updated with the new IP.
-- The user must log in a second time to receive and verify the OTP.
-
-Note: The implementation currently sets newIp to true on login instead of checking if session.ip !== request.ip.
-
-Notes:
-- Rate limiting applies (max 5 attempts) both in middleware and inside login logic
-- Input validator verifies inputs and password length
-
+- Login from a new IP triggers OTP verification  
+- First attempt sets newIp = true  
+- User must login a second time to receive OTP  
+- Note: Currently newIp is set on login instead of checking session.ip !== request.ip  
 
 Response:
+
 {
   "message": "Login successful",
-  "token": "<jwt-token>",
+  "token": "",
   "user": { ...userData }
 }
+---
 
-POST /api/users/verifyotp
+### 3. OTP Verification
+
+POST /api/users/verifyotp  
+
 Request Body:
+
 {
   "email": "bb@example.com",
   "otp": "123456"
 }
 Response:
+
 {
   "message": "Otp Verified. Login successful",
-  "token": "<jwt-token>",
+  "token": "",
   "user": { ...userData }
 }
+---
 
-POST /api/users/verifyemail?token=<token>
+### 4. Email Verification
+
+POST /api/users/verifyemail?token=your_token  
+
 Response:
+
 {
   "message": "Verified"
 }
+---
 
-GET /api/auth/id
-Description: Get authenticated user account
+### 5. Get Authenticated User
+
+GET /api/auth/id  
 
 Headers:
-Authorization: Bearer <jwt-token>
 
+Authorization: Bearer <token>
 Response:
-"user": { ...userData }
 
-Features:
+{
+  "user": { ...userData }
+}
+---
 
-- Signup with email verification
-- Login with password validation and rate limiting
-- OTP verification for login from new IP
-- Session tracking (IP, device, last login time)
-- Password hashing with bcrypt
-- Input validation (prevent SQL injection) in signup and login
-- Redis cache for idempotency keys and temporary data
-- ETag support for caching responses
-- Email queue for sending verification emails and OTP asynchronously
-- Worker process listens to queue and sends emails
-- Mailer module for email handling
-- Admin routes for user management
+## 🔹 Features
 
-Middlewares:
+- Signup with email verification  
+- Login with password validation & rate limiting  
+- OTP verification for login from new IP  
+- Session tracking (IP, device, last login)  
+- Password hashing using bcrypt  
+- Input validation to prevent SQL injection  
+- Redis caching for idempotency keys & temporary data  
+- ETag support for caching responses  
+- Email queue for asynchronous OTP & verification emails  
+- Worker process for sending queued emails  
+- Admin routes for user management  
 
-- Rate limiter (login route)
-- Validator (signup and login)
-- isAuthenticated
-- isAdmin
+---
 
-Extras:
+## 🔹 Middlewares
 
-- Redis cache stores idempotency keys for signup and email verification
-- Email queue sends verification and OTP emails asynchronously
-- Worker process handles sending queued emails
-- Sessions track device ID, device type, IP, creation and last active time
-- Security: bcrypt for password hashing, JWT for authentication, OTP for new IP login
+- Rate limiter – login route  
+- Validator – signup & login inputs  
+- isAuthenticated  
+- isAdmin  
 
-Folder Structure:
+---
+
+## 🔹 Extras
+
+- Redis stores idempotency keys for signup & email verification  
+- Sessions track device ID, type, IP, creation & last active time  
+- Security: bcrypt, JWT, OTP for new IP login  
+
+---
+
+## 🔹 Folder Structure
 
 config/
 controller/
@@ -169,17 +211,17 @@ worker/
 createAdmin.js
 README.md
 server.js
+---
 
-Contributing:
+## 🔹 Contributing
 
-1. Fork the repository
-2. Create a branch
-3. Make changes
-4. Submit a pull request
-
-License:
-
-MIT
-
+1. Fork the repository  
+2. Create a branch  
+3. Make changes  
+4. Submit a pull request  
 
 ---
+
+## 🔹 License
+
+MIT
