@@ -67,6 +67,8 @@ node createAdmin.js
 
 ## 🔹 API Endpoints
 
+This project has 13 API routes
+
 ### 1. Signup
 
 POST /api/users/signup  
