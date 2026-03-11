@@ -73,6 +73,9 @@ This project has 13 API routes
 
 POST /api/users/signup  
 
+Screenshot:
+![Signup](screenshots/signup.png)
+
 Request Body:
 
 {
@@ -98,7 +101,11 @@ Response:
 
 ### 2. Login
 
-POST /api/users/login  
+POST /api/users/login 
+
+Screenshot:
+![login](screenshots/firstlogin.png)
+![login](screenshots/login.png)
 
 Request Body:
 
@@ -126,6 +133,9 @@ Response:
 
 POST /api/users/verifyotp  
 
+Screenshot:
+![verifyotp](screenshots/otp.png)
+
 Request Body:
 
 {
@@ -145,6 +155,9 @@ Response:
 
 POST /api/users/verifyemail?token=your_token  
 
+Screenshot:
+![verifyemail](screenshots/email.png)
+
 Response:
 
 {
@@ -155,6 +168,9 @@ Response:
 ### 5. Get Authenticated User
 
 GET /api/auth/id  
+
+Screenshot:
+![getID](screenshots/id.png)
 
 Headers:
 
